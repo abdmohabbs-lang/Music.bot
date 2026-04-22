@@ -3,6 +3,7 @@ import yt_dlp
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
+# التوكن من Railway Variables
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -15,7 +16,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("اكتب اسم المقطع بعد يوت")
             return
 
-        await update.message.reply_text("جاري التحميل... 🎧")
+        await update.message.reply_text("جاري التحميل 🎧...")
 
         ydl_opts = {
             'format': 'bestaudio/best',
@@ -34,13 +35,15 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 ydl.extract_info(f"ytsearch1:{query}", download=True)
 
             if os.path.exists("song.mp3"):
-                await update.message.reply_audio(open("song.mp3", "rb"))
+                with open("song.mp3", "rb") as f:
+                    await update.message.reply_audio(f)
                 os.remove("song.mp3")
 
-        except:
-            await update.message.reply_text("صار خطأ بالتحميل")
+        except Exception:
+            await update.message.reply_text("صار خطأ بالتحميل ❌")
 
-app = ApplicationBuilder().token(8179952628:AAFpCgX7ulZvbIxLNquz2g0ZiB3fjf-WrTY).build()
+app = ApplicationBuilder().token(BOT_TOKEN).build()
+
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
 app.run_polling()
