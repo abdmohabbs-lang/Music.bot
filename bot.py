@@ -3,8 +3,11 @@ import yt_dlp
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
-# التوكن من Railway Variables
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+# تأكد من التوكن
+if not BOT_TOKEN:
+    raise Exception("BOT_TOKEN is missing!")
 
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.lower()
@@ -21,8 +24,8 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': 'song.%(ext)s',
-            'quiet': True,
             'noplaylist': True,
+            'quiet': True,
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
@@ -32,14 +35,17 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.extract_info(f"ytsearch1:{query}", download=True)
+                info = ydl.extract_info(f"ytsearch1:{query}", download=True)
+                filename = ydl.prepare_filename(info).replace(".webm", ".mp3").replace(".m4a", ".mp3")
 
-            if os.path.exists("song.mp3"):
-                with open("song.mp3", "rb") as f:
+            if os.path.exists(filename):
+                with open(filename, "rb") as f:
                     await update.message.reply_audio(f)
-                os.remove("song.mp3")
+                os.remove(filename)
+            else:
+                await update.message.reply_text("ما قدرت ألقى الملف بعد التحميل ❌")
 
-        except Exception:
+        except Exception as e:
             await update.message.reply_text("صار خطأ بالتحميل ❌")
 
 app = ApplicationBuilder().token(BOT_TOKEN).build()
