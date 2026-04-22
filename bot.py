@@ -3,8 +3,11 @@ import yt_dlp
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
-# جلب التوكن من Railway Variables
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+if not BOT_TOKEN:
+    print("BOT_TOKEN missing!")
+    exit()
 
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.lower()
@@ -13,10 +16,10 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         query = text.replace("يوت", "").strip()
 
         if not query:
-            await update.message.reply_text("اكتب اسم المقطع بعد يوت")
+            await update.message.reply_text("اكتب اسم المقطع")
             return
 
-        await update.message.reply_text("جاري التحميل 🎧...")
+        await update.message.reply_text("جاري التحميل 🎧")
 
         ydl_opts = {
             'format': 'bestaudio/best',
@@ -32,20 +35,20 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(f"ytsearch1:{query}", download=True)
+                ydl.extract_info(f"ytsearch1:{query}", download=True)
 
-            # إرسال الملف
-            for file in os.listdir():
-                if file.endswith(".mp3"):
-                    with open(file, "rb") as f:
-                        await update.message.reply_audio(f)
-                    os.remove(file)
+            for f in os.listdir():
+                if f.endswith(".mp3"):
+                    with open(f, "rb") as audio:
+                        await update.message.reply_audio(audio)
+                    os.remove(f)
 
-        except Exception:
-            await update.message.reply_text("صار خطأ بالتحميل ❌")
+        except Exception as e:
+            print("ERROR:", e)
+            await update.message.reply_text("صار خطأ ❌")
 
-# تشغيل البوت
 app = ApplicationBuilder().token(BOT_TOKEN).build()
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
+print("Bot is running...")
 app.run_polling()
