@@ -3,7 +3,7 @@ import yt_dlp
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("8179952628:AAEV3dfOT5BtSYQczuNgLL_dkwlw6XosotE")
 
 # تأكد من التوكن
 if not BOT_TOKEN:
@@ -48,7 +48,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception as e:
             await update.message.reply_text("صار خطأ بالتحميل ❌")
 
-app = ApplicationBuilder().token(BOT_TOKEN).build()
+app = ApplicationBuilder().token(8179952628:AAEV3dfOT5BtSYQczuNgLL_dkwlw6XosotE).build()
 
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
