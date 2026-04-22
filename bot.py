@@ -48,7 +48,7 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception as e:
             await update.message.reply_text("صار خطأ بالتحميل ❌")
 
-app = ApplicationBuilder().token(8179952628:AAEV3dfOT5BtSYQczuNgLL_dkwlw6XosotE).build()
+app = ApplicationBuilder().token("8179952628:AAEV3dfOT5BtSYQczuNgLL_dkwlw6XosotE").build()
 
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
